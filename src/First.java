@@ -25,9 +25,6 @@ public class First {
         int maximum = biggest;
         int minimum = smallest;
 
-//        public static int[] getints (Integer.parseInt(reader.readLine())) {
-//            return;
-//        }//todo должен проверять на целые числа принятые с reader
 
         System.out.print(maximum + " " + minimum);
     }

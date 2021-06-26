@@ -19,6 +19,8 @@ public class MapAndSortCollections {
         commandCollection.add("print");
         commandCollection.add("values");
         commandCollection.add("end");
+        commandCollection.add("name");
+        commandCollection.add("setName");
 
         map.put("арбуз", "ягода");
         map.put("банан", "трава");
@@ -35,12 +37,24 @@ public class MapAndSortCollections {
 
         //выводит уже отфильтрованные значения
         String text;
-        System.out.println("help-отобразит все доступные команды");
-        System.out.println("начинайте с values");
-
+        Person person = new Person();
+        person.setName("");
+        //todo создать на все значения классы?
         while (true) {
-             text=readText();
-            if (text.equals("values")){
+            while (person.getName().isEmpty()) {
+                System.out.println("Введите имя");
+                person.setName(readText());
+            }
+            text = readText();
+            if (text.equals("setName")) {
+                System.out.println("Введите имя");
+                person.setName(readText());
+            }
+            if (text.equals("name")) {
+                System.out.println("Текущее имя = " + person.getName());
+                System.out.println("Для смены имени вы можете использовать команду setName");
+            }
+            if (text.equals("values")) {
                 Iterator<String> iteratorOfValues = map.values().iterator();
                 Iterator<String> iteratorOfValues1 = map.values().iterator();
                 Iterator<String> iteratorOfKeys = map.keySet().iterator();
@@ -70,11 +84,12 @@ public class MapAndSortCollections {
                 System.out.println("sort.natural -По возрастанию");
                 System.out.println("sort.reverse -По возрастанию");
             }
-            if(text.equals("sort.natural"))reverser(text, listOfKeys);
-            if(text.equals("sort.reverse"))reverser(text, listOfKeys);
+            if (text.equals("sort.natural")) reverser(text, listOfKeys);
+            if (text.equals("sort.reverse")) reverser(text, listOfKeys);
             if (text.equals("print")) listOfKeys.forEach(System.out::println);
         }
     }
+
 
     public static void help(ArrayList<String> commandsList) {
         System.out.println("Список доступных команд");
@@ -87,8 +102,21 @@ public class MapAndSortCollections {
         if (a.equals("sort.natural")) list.sort(Comparator.naturalOrder());
         if (a.equals("sort.reverse")) list.sort(Comparator.reverseOrder());
     }
+
     public static String readText() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         return reader.readLine();
+    }
+}
+
+class Person {
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
