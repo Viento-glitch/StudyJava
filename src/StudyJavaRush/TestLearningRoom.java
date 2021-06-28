@@ -11,14 +11,13 @@ public class TestLearningRoom {
         ArrayList<String> listNames = new ArrayList<>();
         ArrayList<String> listOfTip = new ArrayList<>();
         ArrayList<Plant> plants = new ArrayList<>();
-        ArrayList<Plant> basket = new ArrayList<>();
+        ArrayList<Plant> cart = new ArrayList<>();
         ArrayList<Plant> bayed = new ArrayList<>();
         //список команд для консоли юзверя
         commandCollection.add("help");
         commandCollection.add("?");
         commandCollection.add("sort.natural");
         commandCollection.add("sort.reverse");
-//        commandCollection.add("print");
         commandCollection.add("price");
         commandCollection.add("price.?");
         commandCollection.add("price.all");
@@ -26,9 +25,9 @@ public class TestLearningRoom {
         commandCollection.add("tip");
         commandCollection.add("end");
         commandCollection.add("name");
-        commandCollection.add("basket.add");
-        commandCollection.add("basket.price");
-        commandCollection.add("basket.in");
+        commandCollection.add("cart.add");
+        commandCollection.add("cart.price");
+        commandCollection.add("cart.in");
         commandCollection.add("setName");
         commandCollection.sort(Comparator.naturalOrder());
         plants.add(new Plant("арбуз", "ягода", 12, 23, false));
@@ -86,16 +85,16 @@ public class TestLearningRoom {
                 System.out.println("Для смены имени вы можете использовать команду setName");
             }
 
-            if (text.equals("basket.price")) {
+            if (text.equals("cart.price")) {
                 int price = 0;
-                for (int i = 0; i < basket.size(); i++) {
-                    price = price + basket.get(i).getPrice();
+                for (int i = 0; i < cart.size(); i++) {
+                    price = price + cart.get(i).getPrice();
                 }
             }
-            if (text.equals("basket.in")) {
-                if (!basket.isEmpty()) {
-                    for (int i = 0; i < basket.size(); i++) {
-                        System.out.println(basket.get(i).getName());
+            if (text.equals("cart.in")) {
+                if (!cart.isEmpty()) {
+                    for (int i = 0; i < cart.size(); i++) {
+                        System.out.println(cart.get(i).getName());
                     }
                 } else {
                     System.out.println("Корзина пуста");
@@ -126,9 +125,9 @@ public class TestLearningRoom {
                         listNames.add(name);
                     }
                 }
-                text = "basket.add";
+                text = "cart.add";
             }
-            if (text.equals("basket.add")) {
+            if (text.equals("cart.add")) {
                 if (!listNames.isEmpty()) {
                     System.out.println("Какой товар?");
                     listNames.forEach(System.out::println);
@@ -147,7 +146,7 @@ public class TestLearningRoom {
                             }
                             int balance;
                             balance = plants.get(i).getKilograms() - howMuch;
-                            if (howMuch > 0) basketAdd(basket, plants.get(i));
+                            if (howMuch > 0) cartAdd(cart, plants.get(i));
                             else {
                                 System.out.println("Не задерживайте очередь если ничего не покупаете!");
                                 System.out.println("Вас выгнали из магазина =(");
@@ -178,10 +177,10 @@ public class TestLearningRoom {
             if (text.equals("sort.natural")) reverser(text, listNames);
             if (text.equals("sort.reverse")) reverser(text, listNames);
             if (text.equals("bay")) {
-                for (Plant plant : basket) {
+                for (Plant plant : cart) {
                     bayed.add(plant);
                 }
-                basket.clear();
+                cart.clear();
                 text = "end";
             }
             if (text.equals("end")) {
@@ -199,8 +198,8 @@ public class TestLearningRoom {
         }
     }
 
-    public static void basketAdd(ArrayList<Plant> basket, Plant product) {
-        basket.add(product);
+    public static void cartAdd(ArrayList<Plant> cart, Plant product) {
+        cart.add(product);
     }
 
     public static void help(ArrayList<String> commandsList) {
@@ -233,13 +232,17 @@ class Person {
     }
 }
 
-class Plant {
+class Plant implements Cloneable {
     private String name;
     private String tip;
     private int pricePerKilogram;
     private int kilograms;
     private int price = pricePerKilogram * kilograms;
     private boolean bayed;
+
+    protected Plant clone() throws CloneNotSupportedException {
+        return (Plant) super.clone();
+    }
 
     public boolean isBayed() {
         return bayed;
