@@ -26,8 +26,9 @@ public class TestLearningRoom {
         commandCollection.add("end");
         commandCollection.add("name");
         commandCollection.add("cart.add");
-        commandCollection.add("cart.price");
+        commandCollection.add("cart.price");//todo сделать метод
         commandCollection.add("cart.in");
+        commandCollection.add("cart.back");
         commandCollection.add("setName");
         commandCollection.sort(Comparator.naturalOrder());
         plants.add(new Plant("арбуз", "ягода", 12, 23, false));
@@ -43,7 +44,7 @@ public class TestLearningRoom {
         plants.add(new Plant("клубника", "ягода", 127, 22, false));
 
         //проверка количества взятого товара
-        //todo возможность убрать из карзины
+        //возможность убрать из карзины
         //сделать покупку
         //при покупке имеющийся товар уменьшается
         //история покупок
@@ -65,22 +66,22 @@ public class TestLearningRoom {
                     text = "tip";
                 }
             }
-            if (text.equals("price.all")) {
+            if (text.equals("price.all")) {//todo исправить
                 if (listNames.isEmpty()) {
                     System.out.println("Вы не быбрали тип элемента");
                     text = "tip";
                 }
             }
-            if (text.equals("price.?")) {
+            if (text.equals("price.?")) {//todo перенести методы прайсавнутрь
                 System.out.println("Выберите вид цены");
                 System.out.println("price.full - цена всего выбраного товара на складе");
                 System.out.println("price.all - цена выбранного товара за килограм");
             }
-            if (text.equals("setName")) {
+            if (text.equals("setName")) {//рудимент
                 System.out.println("Введите имя");
                 person.setName(readText());
             }
-            if (text.equals("name")) {
+            if (text.equals("name")) {//todo перенести рудимент в этот метод
                 System.out.println("Текущее имя = " + person.getName());
                 System.out.println("Для смены имени вы можете использовать команду setName");
             }
@@ -148,7 +149,7 @@ public class TestLearningRoom {
                             balance = plants.get(i).getKilograms() - howMuch;
                             if (howMuch > 0) {
                                 cartAdd(cart, plants.get(i).clone());
-                                cart.get(cart.size()-1).setKilograms(howMuch);
+                                cart.get(cart.size() - 1).setKilograms(howMuch);
                                 plants.get(i).setKilograms(balance);
                             } else {
                                 System.out.println("Не задерживайте очередь если ничего не покупаете!");
@@ -197,6 +198,54 @@ public class TestLearningRoom {
                 }
                 System.out.println("Сумма затраченных средств = " + sum);
                 break;
+            }
+            if (text.equals("cart.back")) {
+                if (!cart.isEmpty()) {
+                    System.out.println("Что хотите вернуть?");
+                    System.out.println("всё");
+                    for (int i = 0; i < cart.size(); i++) {
+                        System.out.println(cart.get(i).getName());
+                    }
+                    text = readText();//выбор продукта к возврату
+                    if (text.equals("всё")) {
+                        for (int i = 0; i < plants.size(); i++) {
+                            for (int j = 0; j < cart.size(); j++) {
+                                if (cart.get(j).getName().equals(plants.get(i).getName())) {
+                                    plants.get(i).setKilograms(plants.get(i).getKilograms() + cart.get(j).getKilograms());
+                                    plants.get(i).setBayed(false);
+                                    cart.remove(j);
+                                }
+                            }
+                        }
+                    }//todo сделать полный возврат товара и чистку корзины
+                    else {
+                        for (int i = 0; i < cart.size(); i++) {//поиск продукта в корзине
+                            if (text.equals(cart.get(i).getName())) {
+                                System.out.println("В вашей корзине " + cart.get(i).getKilograms());
+                            }//выводит количество килограм данного продукта
+                            System.out.println("Сколько изьять?");
+                            int k = Integer.parseInt(readText());
+                            if (k > cart.get(i).getKilograms()) {
+                                System.out.println("Да вы и не брали столько!");
+                            }
+                            if (k > 0) {
+                                cart.get(i).setKilograms(cart.get(i).getKilograms() - k);
+                                for (int j = 0; j < plants.size(); j++) {//поиск по имени эквивалентного значения
+                                    if (plants.get(j).getName().equals(text)) {
+                                        plants.get(j).setKilograms(plants.get(j).getKilograms() + k);
+                                        plants.get(j).setBayed(false);
+                                        if (cart.get(i).getKilograms() == 0) {
+                                            cart.remove(i);
+                                        }
+                                    }
+                                    //реализация возврата в магазин
+                                }
+                            } else System.out.println("Магия запрещена вне хогвартса");
+                        }
+                    }
+                } else {
+                    System.out.println("Карзина пуста");
+                }
             }
         }
     }
