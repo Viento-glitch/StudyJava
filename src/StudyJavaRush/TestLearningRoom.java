@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class TestLearningRoom {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, CloneNotSupportedException {
         ArrayList<String> commandCollection = new ArrayList<>();
         ArrayList<String> listNames = new ArrayList<>();
         ArrayList<String> listOfTip = new ArrayList<>();
@@ -146,8 +146,11 @@ public class TestLearningRoom {
                             }
                             int balance;
                             balance = plants.get(i).getKilograms() - howMuch;
-                            if (howMuch > 0) cartAdd(cart, plants.get(i));
-                            else {
+                            if (howMuch > 0) {
+                                cartAdd(cart, plants.get(i).clone());
+                                cart.get(cart.size()-1).setKilograms(howMuch);
+                                plants.get(i).setKilograms(balance);
+                            } else {
                                 System.out.println("Не задерживайте очередь если ничего не покупаете!");
                                 System.out.println("Вас выгнали из магазина =(");
                                 health = health - 1;
