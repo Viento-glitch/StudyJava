@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class TestLearningRoom {
-    public static void main(String[] args) throws IOException, CloneNotSupportedException {
+    public static void main(String[] args) throws IOException {
         ArrayList<String> commandCollection = new ArrayList<>();
         ArrayList<String> listNames = new ArrayList<>();
         ArrayList<String> listOfTip = new ArrayList<>();
@@ -30,6 +30,7 @@ public class TestLearningRoom {
         commandCollection.add("cart.in");
         commandCollection.add("cart.back");
         commandCollection.add("setName");
+        commandCollection.add("buy");
         commandCollection.sort(Comparator.naturalOrder());
         plants.add(new Plant("арбуз", "ягода", 12, 23, false));
         plants.add(new Plant("банан", "трава", 30, 38, false));
@@ -95,7 +96,7 @@ public class TestLearningRoom {
             if (text.equals("cart.in")) {
                 if (!cart.isEmpty()) {
                     for (int i = 0; i < cart.size(); i++) {
-                        System.out.println(cart.get(i).getName());
+                        System.out.println(cart.get(i).getName() + " " + cart.get(i).getKilograms() + "кг");
                     }
                 } else {
                     System.out.println("Корзина пуста");
@@ -134,23 +135,35 @@ public class TestLearningRoom {
                     listNames.forEach(System.out::println);
                     text = readText();//имя товара
                     for (int i = 0; i < plants.size(); i++) {
-                        if (plants.get(i).getName().equals(text)) {//поиск товара по имени
-                            System.out.println("Есть " + plants.get(i).getKilograms());//вывод количества присутствующего
-                            int howMuch = 0;
+                        Plant plant = plants.get(i);
+                        if (plant.getName().equals(text)) {//поиск товара по имени
+                            System.out.println("Есть " + plant.getKilograms());//вывод количества присутствующего
+                            int howMuchNeedBuyer = 0;
                             while (true) {
                                 System.out.println("Количество?(кг)");//проверка на количество товара
-                                howMuch = Integer.parseInt(readText());
-                                if (howMuch > plants.get(i).getKilograms()) System.out.println("Такого количества нет");
+                                howMuchNeedBuyer = Integer.parseInt(readText());
+                                if (howMuchNeedBuyer > plant.getKilograms())
+                                    System.out.println("Такого количества нет");
                                 else break;
                                 //проверка на остаток продукта
 
                             }
                             int balance;
-                            balance = plants.get(i).getKilograms() - howMuch;
-                            if (howMuch > 0) {
-                                cartAdd(cart, plants.get(i).clone());
-                                cart.get(cart.size() - 1).setKilograms(howMuch);
-                                plants.get(i).setKilograms(balance);
+                            balance = plant.getKilograms() - howMuchNeedBuyer;
+                            //добавление количества выбранного товара с отниманием в магазине
+                            if (howMuchNeedBuyer > 0) {
+                                if (cart.contains(plant.getName())) {
+                                    for (int j = 0; j < cart.size(); j++) {
+                                        Plant cartJ = cart.get(j);
+                                        if (cartJ.equals(plant)) {
+                                            cartJ.setKilograms(cartJ.getKilograms() + howMuchNeedBuyer);
+                                        }
+                                    }
+                                } else {
+                                    cartAdd(cart, new Plant(plant));
+                                    cart.get(cart.size() - 1).setKilograms(howMuchNeedBuyer);
+                                }
+                                plant.setKilograms(plant.getKilograms() - howMuchNeedBuyer);
                             } else {
                                 System.out.println("Не задерживайте очередь если ничего не покупаете!");
                                 System.out.println("Вас выгнали из магазина =(");
@@ -158,7 +171,7 @@ public class TestLearningRoom {
                             }
                             if (balance == 0) {
                                 System.out.println("Спасибо за пакупку,заходите ещё!");
-                                plants.get(i).setBayed(true);
+                                plant.setBayed(true);
 
                             }
                         }
@@ -180,7 +193,7 @@ public class TestLearningRoom {
             }
             if (text.equals("sort.natural")) reverser(text, listNames);
             if (text.equals("sort.reverse")) reverser(text, listNames);
-            if (text.equals("bay")) {
+            if (text.equals("buy")) {
                 for (Plant plant : cart) {
                     bayed.add(plant);
                 }
@@ -217,8 +230,7 @@ public class TestLearningRoom {
                                 }
                             }
                         }
-                    }//todo сделать полный возврат товара и чистку корзины
-                    else {
+                    } else {
                         for (int i = 0; i < cart.size(); i++) {//поиск продукта в корзине
                             if (text.equals(cart.get(i).getName())) {
                                 System.out.println("В вашей корзине " + cart.get(i).getKilograms());
@@ -227,20 +239,21 @@ public class TestLearningRoom {
                             int k = Integer.parseInt(readText());
                             if (k > cart.get(i).getKilograms()) {
                                 System.out.println("Да вы и не брали столько!");
-                            }
-                            if (k > 0) {
-                                cart.get(i).setKilograms(cart.get(i).getKilograms() - k);
-                                for (int j = 0; j < plants.size(); j++) {//поиск по имени эквивалентного значения
-                                    if (plants.get(j).getName().equals(text)) {
-                                        plants.get(j).setKilograms(plants.get(j).getKilograms() + k);
-                                        plants.get(j).setBayed(false);
-                                        if (cart.get(i).getKilograms() == 0) {
-                                            cart.remove(i);
+                            } else {
+                                if (k > 0) {
+                                    cart.get(i).setKilograms(cart.get(i).getKilograms() - k);//todo отловить баг возврата большего значения нежели было 
+                                    for (int j = 0; j < plants.size(); j++) {//поиск по имени эквивалентного значения
+                                        if (plants.get(j).getName().equals(text)) {
+                                            plants.get(j).setKilograms(plants.get(j).getKilograms() + k);
+                                            plants.get(j).setBayed(false);
+                                            if (cart.get(i).getKilograms() == 0) {
+                                                cart.remove(i);
+                                            }
                                         }
+                                        //реализация возврата в магазин
                                     }
-                                    //реализация возврата в магазин
-                                }
-                            } else System.out.println("Магия запрещена вне хогвартса");
+                                } else System.out.println("Магия запрещена вне хогвартса");
+                            }
                         }
                     }
                 } else {
@@ -250,8 +263,8 @@ public class TestLearningRoom {
         }
     }
 
-    public static void cartAdd(ArrayList<Plant> cart, Plant product) {
-        cart.add(product);
+    public static void cartAdd(ArrayList<Plant> cart, Plant plant) {
+        cart.add(plant);
     }
 
     public static void help(ArrayList<String> commandsList) {
@@ -284,7 +297,7 @@ class Person {
     }
 }
 
-class Plant implements Cloneable {
+class Plant {
     private String name;
     private String tip;
     private int pricePerKilogram;
@@ -292,8 +305,13 @@ class Plant implements Cloneable {
     private int price = pricePerKilogram * kilograms;
     private boolean bayed;
 
-    protected Plant clone() throws CloneNotSupportedException {
-        return (Plant) super.clone();
+    public Plant(Plant plant) {
+        this.name = plant.getName();
+        this.tip = plant.getTip();
+        this.pricePerKilogram = plant.getPricePerKilogram();
+        this.kilograms = plant.getKilograms();
+        this.bayed = plant.isBayed();
+
     }
 
     public boolean isBayed() {
