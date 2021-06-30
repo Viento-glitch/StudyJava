@@ -129,13 +129,12 @@ public class TestLearningRoom {
                 }
                 text = "cart.add";
             }
-            if (text.equals("cart.add")) {
+            if (text.equals("cart.add")) {//
                 if (!listNames.isEmpty()) {
                     System.out.println("Какой товар?");
                     listNames.forEach(System.out::println);
                     text = readText();//имя товара
-                    for (int i = 0; i < plants.size(); i++) {
-                        Plant plant = plants.get(i);
+                    for (Plant plant : plants) {
                         if (plant.getName().equals(text)) {//поиск товара по имени
                             System.out.println("Есть " + plant.getKilograms());//вывод количества присутствующего
                             int howMuchNeedBuyer = 0;
@@ -152,16 +151,18 @@ public class TestLearningRoom {
                             balance = plant.getKilograms() - howMuchNeedBuyer;
                             //добавление количества выбранного товара с отниманием в магазине
                             if (howMuchNeedBuyer > 0) {
-                                if (cart.contains(plant.getName())) {
-                                    for (int j = 0; j < cart.size(); j++) {
-                                        Plant cartJ = cart.get(j);
-                                        if (cartJ.equals(plant)) {
-                                            cartJ.setKilograms(cartJ.getKilograms() + howMuchNeedBuyer);
-                                        }
-                                    }
-                                } else {
+                                if (cart.isEmpty()) {
                                     cartAdd(cart, new Plant(plant));
                                     cart.get(cart.size() - 1).setKilograms(howMuchNeedBuyer);
+                                } else {
+                                    for (int j = 0; j < cart.size(); j++) {
+                                        if (plant.getName().equals(cart.get(j).getName())) {
+                                            cart.get(j).setKilograms(cart.get(j).getKilograms() + howMuchNeedBuyer);
+                                        }else {
+                                            cartAdd(cart, new Plant(plant));
+                                            cart.get(cart.size() - 1).setKilograms(howMuchNeedBuyer);
+                                        }
+                                    }
                                 }
                                 plant.setKilograms(plant.getKilograms() - howMuchNeedBuyer);
                             } else {
@@ -194,9 +195,7 @@ public class TestLearningRoom {
             if (text.equals("sort.natural")) reverser(text, listNames);
             if (text.equals("sort.reverse")) reverser(text, listNames);
             if (text.equals("buy")) {
-                for (Plant plant : cart) {
-                    bayed.add(plant);
-                }
+                bayed.addAll(cart);
                 cart.clear();
                 text = "end";
             }
@@ -241,7 +240,7 @@ public class TestLearningRoom {
                                 System.out.println("Да вы и не брали столько!");
                             } else {
                                 if (k > 0) {
-                                    cart.get(i).setKilograms(cart.get(i).getKilograms() - k);//todo отловить баг возврата большего значения нежели было 
+                                    cart.get(i).setKilograms(cart.get(i).getKilograms() - k);
                                     for (int j = 0; j < plants.size(); j++) {//поиск по имени эквивалентного значения
                                         if (plants.get(j).getName().equals(text)) {
                                             plants.get(j).setKilograms(plants.get(j).getKilograms() + k);
