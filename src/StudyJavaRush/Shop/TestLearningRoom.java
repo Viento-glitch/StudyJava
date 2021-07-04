@@ -1,4 +1,4 @@
-package StudyJavaRush;
+package StudyJavaRush.Shop;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,9 +10,11 @@ public class TestLearningRoom {
         ArrayList<String> commandCollection = new ArrayList<>();
         ArrayList<String> listNames = new ArrayList<>();
         ArrayList<String> listOfTip = new ArrayList<>();
+
         ArrayList<Plant> plants = new ArrayList<>();
         ArrayList<Plant> cart = new ArrayList<>();
         ArrayList<Plant> bayed = new ArrayList<>();
+
         //список команд для консоли юзверя
         commandCollection.add("help");
         commandCollection.add("?");
@@ -31,7 +33,9 @@ public class TestLearningRoom {
         commandCollection.add("cart.back");
         commandCollection.add("setName");
         commandCollection.add("buy");
+
         commandCollection.sort(Comparator.naturalOrder());
+
         plants.add(new Plant("арбуз", "ягода", 12, 23, false));
         plants.add(new Plant("банан", "трава", 30, 38, false));
         plants.add(new Plant("вишня", "ягода", 153, 48, false));
@@ -129,54 +133,36 @@ public class TestLearningRoom {
                 }
                 text = "cart.add";
             }
-            if (text.equals("cart.add")) {//
+            if (text.equals("cart.add")) {
                 if (!listNames.isEmpty()) {
                     System.out.println("Какой товар?");
                     listNames.forEach(System.out::println);
                     text = readText();//имя товара
-                    for (Plant plant : plants) {
-                        if (plant.getName().equals(text)) {//поиск товара по имени
-                            System.out.println("Есть " + plant.getKilograms());//вывод количества присутствующего
+                    for (Plant plantInShop : plants) {
+                        if (plantInShop.getName().equals(text)) {//поиск товара по имени
+                            System.out.println("Есть " + plantInShop.getKilograms());//вывод количества присутствующего
                             int howMuchNeedBuyer = 0;
                             while (true) {
                                 System.out.println("Количество?(кг)");//проверка на количество товара
                                 howMuchNeedBuyer = Integer.parseInt(readText());
-                                if (howMuchNeedBuyer > plant.getKilograms())
+                                if (howMuchNeedBuyer > plantInShop.getKilograms())
                                     System.out.println("Такого количества нет");
                                 else break;
 
                             }
-                            int balance;
-                            balance = plant.getKilograms() - howMuchNeedBuyer;
-                            //добавление количества выбранного товара с отниманием в магазине
+
                             if (howMuchNeedBuyer > 0) {
-                                if (cart.isEmpty()) {//если корзина пуста
-                                    cartAdd(cart, new Plant(plant));
-                                    cart.get(cart.size() - 1).setKilograms(howMuchNeedBuyer);
-                                    plant.setKilograms(balance);}
-                                else {//если не пуста
-                                    int size = cart.size();
-                                    for (int i = 0; i < size; i++) {
-                                        if (plant.getName().equals(cart.get(i).getName())) {//если соответствие
-                                            cart.get(i).setKilograms(cart.get(i).getKilograms() + howMuchNeedBuyer);
-                                            plant.setKilograms(balance);
-                                            break;
-                                        } else if (i == cart.size() - 1) {//если индекс последний
-                                            cartAdd(cart, new Plant(plant));
-                                            cart.get(cart.size() - 1).setKilograms(howMuchNeedBuyer);
-                                            plant.setKilograms(balance);
-                                        }
-                                    }
-                                }
+                                updateShopAndCart(cart, plantInShop, howMuchNeedBuyer);
+
                             } else {
                                 System.out.println("Не задерживайте очередь если ничего не покупаете!");
                                 System.out.println("Вас выгнали из магазина =(");
                                 health = health - 1;
                             }
                             //проверка на остаток продукта
-                            if (balance == 0) {
-                                System.out.println("Спасибо за пакупку,заходите ещё!");
-                                plant.setBayed(true);
+                            if (plantInShop.getKilograms() == 0) {
+                                System.out.println("Товар " + plantInShop.getName() + " закончился в магазине");
+                                plantInShop.setBayed(true);
 
                             }
                         }
@@ -267,6 +253,30 @@ public class TestLearningRoom {
 
     }
 
+    private static void updateShopAndCart(ArrayList<Plant> cart, Plant plantInShop, int howMuchNeedBuyer) {
+        int balance;
+        balance = plantInShop.getKilograms() - howMuchNeedBuyer;
+        Plant foundPlant = null;
+        int size = cart.size();
+        for (int i = 0; i < size; i++) {
+            Plant selectedPlantInCart = cart.get(i);
+            if (plantInShop.getName().equals(selectedPlantInCart.getName())) {//если соответствие
+                foundPlant = selectedPlantInCart;
+                break;
+            }
+        }
+
+        if (foundPlant != null) {
+            foundPlant.setKilograms(foundPlant.getKilograms() + howMuchNeedBuyer);
+            plantInShop.setKilograms(balance);
+
+        } else {
+            Plant newPlant = new Plant(plantInShop);
+            newPlant.setKilograms(howMuchNeedBuyer);
+            cartAdd(cart, newPlant);
+        }
+    }
+
     public static void cartAdd(ArrayList<Plant> cart, Plant plant) {
         cart.add(plant);
     }
@@ -289,84 +299,5 @@ public class TestLearningRoom {
     }
 }
 
-class Person {
-    private String name;
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-}
-
-class Plant {
-    private String name;
-    private String tip;
-    private int pricePerKilogram;
-    private int kilograms;
-    private int price = pricePerKilogram * kilograms;
-    private boolean bayed;
-
-    public Plant(Plant plant) {
-        this.name = plant.getName();
-        this.tip = plant.getTip();
-        this.pricePerKilogram = plant.getPricePerKilogram();
-        this.kilograms = plant.getKilograms();
-        this.bayed = plant.isBayed();
-
-    }
-
-    public boolean isBayed() {
-        return bayed;
-    }
-
-    public void setBayed(boolean bayed) {
-        this.bayed = bayed;
-    }
-
-    public Plant(String name, String tip, int pricePerKilogram, int kilograms, boolean bayed) {
-        this.name = name;
-        this.tip = tip;
-        this.pricePerKilogram = pricePerKilogram;
-        this.kilograms = kilograms;
-        this.bayed = bayed;
-    }
-
-    public String getTip() {
-        return tip;
-    }
-
-    public void setTip(String tip) {
-        this.tip = tip;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getPricePerKilogram() {
-        return pricePerKilogram;
-    }
-
-    public void setPricePerKilogram(int pricePerKilogram) {
-        this.pricePerKilogram = pricePerKilogram;
-    }
-
-    public int getKilograms() {
-        return kilograms;
-    }
-
-    public void setKilograms(int kilograms) {
-        this.kilograms = kilograms;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-}
