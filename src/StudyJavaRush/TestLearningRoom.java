@@ -144,32 +144,36 @@ public class TestLearningRoom {
                                 if (howMuchNeedBuyer > plant.getKilograms())
                                     System.out.println("Такого количества нет");
                                 else break;
-                                //проверка на остаток продукта
 
                             }
                             int balance;
                             balance = plant.getKilograms() - howMuchNeedBuyer;
                             //добавление количества выбранного товара с отниманием в магазине
                             if (howMuchNeedBuyer > 0) {
-                                if (cart.isEmpty()) {
+                                if (cart.isEmpty()) {//если корзина пуста
                                     cartAdd(cart, new Plant(plant));
                                     cart.get(cart.size() - 1).setKilograms(howMuchNeedBuyer);
-                                } else {
-                                    for (int j = 0; j < cart.size(); j++) {
-                                        if (plant.getName().equals(cart.get(j).getName())) {
-                                            cart.get(j).setKilograms(cart.get(j).getKilograms() + howMuchNeedBuyer);
-                                        }else {
+                                    plant.setKilograms(balance);}
+                                else {//если не пуста
+                                    int size = cart.size();
+                                    for (int i = 0; i < size; i++) {
+                                        if (plant.getName().equals(cart.get(i).getName())) {//если соответствие
+                                            cart.get(i).setKilograms(cart.get(i).getKilograms() + howMuchNeedBuyer);
+                                            plant.setKilograms(balance);
+                                            break;
+                                        } else if (i == cart.size() - 1) {//если индекс последний
                                             cartAdd(cart, new Plant(plant));
                                             cart.get(cart.size() - 1).setKilograms(howMuchNeedBuyer);
+                                            plant.setKilograms(balance);
                                         }
                                     }
                                 }
-                                plant.setKilograms(plant.getKilograms() - howMuchNeedBuyer);
                             } else {
                                 System.out.println("Не задерживайте очередь если ничего не покупаете!");
                                 System.out.println("Вас выгнали из магазина =(");
                                 health = health - 1;
                             }
+                            //проверка на остаток продукта
                             if (balance == 0) {
                                 System.out.println("Спасибо за пакупку,заходите ещё!");
                                 plant.setBayed(true);
@@ -260,6 +264,7 @@ public class TestLearningRoom {
                 }
             }
         }
+
     }
 
     public static void cartAdd(ArrayList<Plant> cart, Plant plant) {
