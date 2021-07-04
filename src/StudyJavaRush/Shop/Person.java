@@ -1,6 +1,6 @@
 package StudyJavaRush.Shop;
 
-class Person {
+public class Person {
     private String name;
 
     public String getName() {

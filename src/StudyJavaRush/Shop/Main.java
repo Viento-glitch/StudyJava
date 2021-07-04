@@ -1,13 +1,17 @@
 package StudyJavaRush.Shop;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.*;
+import StudyJavaRush.Shop.Commands.CommandInterface;
+import StudyJavaRush.Shop.Commands.HelpCommands;
+import StudyJavaRush.Shop.Commands.Name;
 
-public class TestLearningRoom {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+
+import static StudyJavaRush.Shop.Methods.Reader.readText;
+
+public class Main {
     public static void main(String[] args) throws IOException {
-        ArrayList<String> commandCollection = new ArrayList<>();
         ArrayList<String> listNames = new ArrayList<>();
         ArrayList<String> listOfTip = new ArrayList<>();
 
@@ -15,38 +19,10 @@ public class TestLearningRoom {
         ArrayList<Plant> cart = new ArrayList<>();
         ArrayList<Plant> bayed = new ArrayList<>();
 
-        //список команд для консоли юзверя
-        commandCollection.add("help");
-        commandCollection.add("?");
-        commandCollection.add("sort.natural");
-        commandCollection.add("sort.reverse");
-        commandCollection.add("price");
-        commandCollection.add("price.?");
-        commandCollection.add("price.all");
-        commandCollection.add("price.full");
-        commandCollection.add("tip");
-        commandCollection.add("end");
-        commandCollection.add("name");
-        commandCollection.add("cart.add");
-        commandCollection.add("cart.price");//todo сделать метод
-        commandCollection.add("cart.in");
-        commandCollection.add("cart.back");
-        commandCollection.add("setName");
-        commandCollection.add("buy");
-
-        commandCollection.sort(Comparator.naturalOrder());
-
-        plants.add(new Plant("арбуз", "ягода", 12, 23, false));
-        plants.add(new Plant("банан", "трава", 30, 38, false));
-        plants.add(new Plant("вишня", "ягода", 153, 48, false));
-        plants.add(new Plant("груша", "фрукт", 412, 37, false));
-        plants.add(new Plant("дыня", "овощ", 10, 16, false));
-        plants.add(new Plant("ежевика", "куст", 912, 10, false));
-        plants.add(new Plant("женьшень", "корень", 212, 22, false));
-        plants.add(new Plant("земляника", "ягода", 132, 234, false));
-        plants.add(new Plant("ирис", "цветок", 142, 2, false));
-        plants.add(new Plant("картофель", "клубень", 212, 3, false));
-        plants.add(new Plant("клубника", "ягода", 127, 22, false));
+        //Создать список команд для консоли юзверя
+        buildStringsCommandList();
+        //создать список продуктов
+        buildPlants(plants);
 
         //проверка количества взятого товара
         //возможность убрать из карзины
@@ -62,7 +38,7 @@ public class TestLearningRoom {
             if (health < 1) break;
             while (person.getName().isEmpty()) {
                 System.out.println("Введите имя");
-                person.setName(readText());
+                Name(person);
             }
             text = readText();
             if (text.equals("price.full")) {
@@ -82,14 +58,14 @@ public class TestLearningRoom {
                 System.out.println("price.full - цена всего выбраного товара на складе");
                 System.out.println("price.all - цена выбранного товара за килограм");
             }
-            if (text.equals("setName")) {//рудимент
+            /*if (text.equals("setName")) {//рудимент
                 System.out.println("Введите имя");
-                person.setName(readText());
+                person.setName(readText());*/
             }
-            if (text.equals("name")) {//todo перенести рудимент в этот метод
+            /*if (text.equals("name")) {//todo перенести рудимент в этот метод
                 System.out.println("Текущее имя = " + person.getName());
                 System.out.println("Для смены имени вы можете использовать команду setName");
-            }
+            }*/
 
             if (text.equals("cart.price")) {
                 int price = 0;
@@ -174,8 +150,6 @@ public class TestLearningRoom {
 
             }
 
-            if (text.equals("help")) help(commandCollection);
-            if (text.equals("?")) help(commandCollection);
 
             if (text.equals("sort")) {
                 System.out.println("Выберите порядок сортировки");
@@ -253,6 +227,52 @@ public class TestLearningRoom {
 
     }
 
+    private static void buildPlants(ArrayList<Plant> plants) {
+        plants.add(new Plant("арбуз", "ягода", 12, 23, false));
+        plants.add(new Plant("банан", "трава", 30, 38, false));
+        plants.add(new Plant("вишня", "ягода", 153, 48, false));
+        plants.add(new Plant("груша", "фрукт", 412, 37, false));
+        plants.add(new Plant("дыня", "овощ", 10, 16, false));
+        plants.add(new Plant("ежевика", "куст", 912, 10, false));
+        plants.add(new Plant("женьшень", "корень", 212, 22, false));
+        plants.add(new Plant("земляника", "ягода", 132, 234, false));
+        plants.add(new Plant("ирис", "цветок", 142, 2, false));
+        plants.add(new Plant("картофель", "клубень", 212, 3, false));
+        plants.add(new Plant("клубника", "ягода", 127, 22, false));
+    }
+
+    private static ArrayList<String> buildStringsCommandList() {
+        ArrayList<String> commandCollection = new ArrayList<>();
+
+        commandCollection.add("help");
+        commandCollection.add("?");
+        commandCollection.add("sort.natural");
+        commandCollection.add("sort.reverse");
+        commandCollection.add("price");
+        commandCollection.add("price.?");
+        commandCollection.add("price.all");
+        commandCollection.add("price.full");
+        commandCollection.add("tip");
+        commandCollection.add("end");
+        commandCollection.add("name");
+        commandCollection.add("cart.add");
+        commandCollection.add("cart.price");//todo сделать метод
+        commandCollection.add("cart.in");
+        commandCollection.add("cart.back");
+        commandCollection.add("setName");
+        commandCollection.add("buy");
+
+        commandCollection.sort(Comparator.naturalOrder());
+        return commandCollection;
+    }
+
+    private static ArrayList<CommandInterface> buildCommandList() {
+        ArrayList<CommandInterface> commandInterfaceCollection = new ArrayList<>();
+        commandInterfaceCollection.add(new HelpCommands(commandInterfaceCollection));
+        commandInterfaceCollection.add(new Name());
+        return commandInterfaceCollection;
+    }
+
     private static void updateShopAndCart(ArrayList<Plant> cart, Plant plantInShop, int howMuchNeedBuyer) {
         int balance;
         balance = plantInShop.getKilograms() - howMuchNeedBuyer;
@@ -273,13 +293,10 @@ public class TestLearningRoom {
         } else {
             Plant newPlant = new Plant(plantInShop);
             newPlant.setKilograms(howMuchNeedBuyer);
-            cartAdd(cart, newPlant);
+            cart.add(newPlant);
         }
     }
 
-    public static void cartAdd(ArrayList<Plant> cart, Plant plant) {
-        cart.add(plant);
-    }
 
     public static void help(ArrayList<String> commandsList) {
         System.out.println("Список доступных команд");
@@ -293,10 +310,7 @@ public class TestLearningRoom {
         if (a.equals("sort.reverse")) list.sort(Comparator.reverseOrder());
     }
 
-    public static String readText() throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        return reader.readLine();
-    }
+
 }
 
 
