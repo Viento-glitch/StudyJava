@@ -12,7 +12,6 @@ public class HelpCommands implements CommandInterface {
         this.commandInterfaceCollection = commandInterfacesCollection;
     }
 
-
     @Override
     public List<String> getNames() {
         return Arrays.asList("help","?");

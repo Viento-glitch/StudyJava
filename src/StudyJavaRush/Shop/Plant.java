@@ -1,6 +1,6 @@
 package StudyJavaRush.Shop;
 
-class Plant {
+public class Plant {
     private String name;
     private String tip;
     private int pricePerKilogram;

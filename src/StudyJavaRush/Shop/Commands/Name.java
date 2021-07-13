@@ -1,16 +1,18 @@
 package StudyJavaRush.Shop.Commands;
 
 import StudyJavaRush.Shop.Person;
+import StudyJavaRush.Shop.Plant;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static StudyJavaRush.Shop.Methods.Reader.readText;
 
 
-public class Name implements CommandInterface {
-    Person person;
+public abstract class Name implements CommandInterface {
+    Person name;
 
     @Override
     public List<String> getNames() {
@@ -18,19 +20,18 @@ public class Name implements CommandInterface {
     }
 
     public Name(Person person) {
-        this.person = person;
+        this.name = person;
     }
 
-    @Override
-    public void execute() throws IOException {
+    public void execute(ArrayList<Plant> cart) throws IOException {
         while (true) {
             System.out.println("Введите имя");
-            person.setName(readText());
-            if (!person.getName().equals("")) ;
+            name.setName(readText());
+            if (!name.getName().equals("")) ;
         }
     }
 
     public String getName() {
-        return person.getName();
+        return name.getName();
     }
 }

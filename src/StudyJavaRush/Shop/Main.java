@@ -1,8 +1,9 @@
 package StudyJavaRush.Shop;
 
+import StudyJavaRush.Shop.Commands.CartBack;
+import StudyJavaRush.Shop.Commands.CartIn;
 import StudyJavaRush.Shop.Commands.CommandInterface;
 import StudyJavaRush.Shop.Commands.HelpCommands;
-import StudyJavaRush.Shop.Commands.Name;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,15 +21,16 @@ public class Main {
         ArrayList<Plant> bayed = new ArrayList<>();
 
         //Создать список команд для консоли юзверя
-        buildStringsCommandList();
+//        buildStringsCommandList();
         //создать список продуктов
         buildPlants(plants);
+        buildCommandList(cart, plants);
+//        ArrayList<CommandInterface> commandInterfaces = buildCommandList();
+//        for (CommandInterface commandInterface : commandInterfaces) {
+//            commandInterface.getNames().contains(userInput);
+//            commandInterface.execute();
+//        }
 
-        //проверка количества взятого товара
-        //возможность убрать из карзины
-        //сделать покупку
-        //при покупке имеющийся товар уменьшается
-        //история покупок
 
         String text;
         Person person = new Person();
@@ -38,9 +40,11 @@ public class Main {
             if (health < 1) break;
             while (person.getName().isEmpty()) {
                 System.out.println("Введите имя");
-                Name(person);
+//                Name
             }
             text = readText();
+
+
             if (text.equals("price.full")) {
                 if (listNames.isEmpty()) {
                     System.out.println("Вы не быбрали тип элемента");
@@ -61,27 +65,15 @@ public class Main {
             /*if (text.equals("setName")) {//рудимент
                 System.out.println("Введите имя");
                 person.setName(readText());*/
-            }
+//        }
             /*if (text.equals("name")) {//todo перенести рудимент в этот метод
                 System.out.println("Текущее имя = " + person.getName());
                 System.out.println("Для смены имени вы можете использовать команду setName");
             }*/
 
-            if (text.equals("cart.price")) {
-                int price = 0;
-                for (int i = 0; i < cart.size(); i++) {
-                    price = price + cart.get(i).getPrice();
-                }
-            }
-            if (text.equals("cart.in")) {
-                if (!cart.isEmpty()) {
-                    for (int i = 0; i < cart.size(); i++) {
-                        System.out.println(cart.get(i).getName() + " " + cart.get(i).getKilograms() + "кг");
-                    }
-                } else {
-                    System.out.println("Корзина пуста");
-                }
-            }
+//            if (text.equals("cart.price")) {
+//                CartIn.execute(cart);
+//            }
             if (text.equals("tip")) {
                 if (!listOfTip.isEmpty()) listOfTip.clear();
                 for (Plant plant1 : plants) {
@@ -176,52 +168,7 @@ public class Main {
                 break;
             }
             if (text.equals("cart.back")) {
-                if (!cart.isEmpty()) {
-                    System.out.println("Что хотите вернуть?");
-                    System.out.println("всё");
-                    for (int i = 0; i < cart.size(); i++) {
-                        System.out.println(cart.get(i).getName());
-                    }
-                    text = readText();//выбор продукта к возврату
-                    if (text.equals("всё")) {
-                        for (int i = 0; i < plants.size(); i++) {
-                            for (int j = 0; j < cart.size(); j++) {
-                                if (cart.get(j).getName().equals(plants.get(i).getName())) {
-                                    plants.get(i).setKilograms(plants.get(i).getKilograms() + cart.get(j).getKilograms());
-                                    plants.get(i).setBayed(false);
-                                    cart.remove(j);
-                                }
-                            }
-                        }
-                    } else {
-                        for (int i = 0; i < cart.size(); i++) {//поиск продукта в корзине
-                            if (text.equals(cart.get(i).getName())) {
-                                System.out.println("В вашей корзине " + cart.get(i).getKilograms());
-                            }//выводит количество килограм данного продукта
-                            System.out.println("Сколько изьять?");
-                            int k = Integer.parseInt(readText());
-                            if (k > cart.get(i).getKilograms()) {
-                                System.out.println("Да вы и не брали столько!");
-                            } else {
-                                if (k > 0) {
-                                    cart.get(i).setKilograms(cart.get(i).getKilograms() - k);
-                                    for (int j = 0; j < plants.size(); j++) {//поиск по имени эквивалентного значения
-                                        if (plants.get(j).getName().equals(text)) {
-                                            plants.get(j).setKilograms(plants.get(j).getKilograms() + k);
-                                            plants.get(j).setBayed(false);
-                                            if (cart.get(i).getKilograms() == 0) {
-                                                cart.remove(i);
-                                            }
-                                        }
-                                        //реализация возврата в магазин
-                                    }
-                                } else System.out.println("Магия запрещена вне хогвартса");
-                            }
-                        }
-                    }
-                } else {
-                    System.out.println("Карзина пуста");
-                }
+
             }
         }
 
@@ -241,41 +188,45 @@ public class Main {
         plants.add(new Plant("клубника", "ягода", 127, 22, false));
     }
 
-    private static ArrayList<String> buildStringsCommandList() {
-        ArrayList<String> commandCollection = new ArrayList<>();
+    /*  private static ArrayList<String> buildStringsCommandList() {
+            ArrayList<String> commandCollection = new ArrayList<>();
 
-        commandCollection.add("help");
-        commandCollection.add("?");
-        commandCollection.add("sort.natural");
-        commandCollection.add("sort.reverse");
-        commandCollection.add("price");
-        commandCollection.add("price.?");
-        commandCollection.add("price.all");
-        commandCollection.add("price.full");
-        commandCollection.add("tip");
-        commandCollection.add("end");
-        commandCollection.add("name");
-        commandCollection.add("cart.add");
-        commandCollection.add("cart.price");//todo сделать метод
-        commandCollection.add("cart.in");
-        commandCollection.add("cart.back");
-        commandCollection.add("setName");
-        commandCollection.add("buy");
+            commandCollection.add("help");
+            commandCollection.add("?");
+            commandCollection.add("sort.natural");
+            commandCollection.add("sort.reverse");
+            commandCollection.add("price");
+            commandCollection.add("price.?");
+            commandCollection.add("price.all");
+            commandCollection.add("price.full");
+            commandCollection.add("tip");
+            commandCollection.add("end");
+            commandCollection.add("name");
+            commandCollection.add("cart.add");
+            commandCollection.add("cart.price");//todo сделать метод
+            commandCollection.add("cart.in");
+            commandCollection.add("cart.back");
+            commandCollection.add("setName");
+            commandCollection.add("buy");
 
-        commandCollection.sort(Comparator.naturalOrder());
-        return commandCollection;
-    }
-
-    private static ArrayList<CommandInterface> buildCommandList() {
+            commandCollection.sort(Comparator.naturalOrder());
+            return commandCollection;
+        }
+    */
+    private static ArrayList<CommandInterface> buildCommandList(ArrayList<Plant> cart, ArrayList<Plant> plants) {
+        //todo реализовать все методы
         ArrayList<CommandInterface> commandInterfaceCollection = new ArrayList<>();
         commandInterfaceCollection.add(new HelpCommands(commandInterfaceCollection));
-        commandInterfaceCollection.add(new Name());
+//        commandInterfaceCollection.add(new Name());
+        commandInterfaceCollection.add(new CartIn(cart));
+        commandInterfaceCollection.add(new CartBack(cart, plants));
+
+
         return commandInterfaceCollection;
     }
 
     private static void updateShopAndCart(ArrayList<Plant> cart, Plant plantInShop, int howMuchNeedBuyer) {
-        int balance;
-        balance = plantInShop.getKilograms() - howMuchNeedBuyer;
+        int balance = plantInShop.getKilograms() - howMuchNeedBuyer;
         Plant foundPlant = null;
         int size = cart.size();
         for (int i = 0; i < size; i++) {
@@ -297,7 +248,6 @@ public class Main {
         }
     }
 
-
     public static void help(ArrayList<String> commandsList) {
         System.out.println("Список доступных команд");
         for (String s : commandsList) {
@@ -309,7 +259,6 @@ public class Main {
         if (a.equals("sort.natural")) list.sort(Comparator.naturalOrder());
         if (a.equals("sort.reverse")) list.sort(Comparator.reverseOrder());
     }
-
 
 }
 
