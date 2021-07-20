@@ -1,9 +1,6 @@
 package StudyJavaRush.Shop;
 
-import StudyJavaRush.Shop.Commands.CartBack;
-import StudyJavaRush.Shop.Commands.CartIn;
-import StudyJavaRush.Shop.Commands.CommandInterface;
-import StudyJavaRush.Shop.Commands.HelpCommands;
+import StudyJavaRush.Shop.Commands.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,50 +11,39 @@ import static StudyJavaRush.Shop.Methods.Reader.readText;
 public class Main {
     public static void main(String[] args) throws IOException {
         ArrayList<String> listNames = new ArrayList<>();
-        ArrayList<String> listOfTip = new ArrayList<>();
 
         ArrayList<Plant> plants = new ArrayList<>();
         ArrayList<Plant> cart = new ArrayList<>();
-        ArrayList<Plant> bayed = new ArrayList<>();
-
-        //Создать список команд для консоли юзверя
-//        buildStringsCommandList();
-        //создать список продуктов
-        buildPlants(plants);
-        buildCommandList(cart, plants);
-//        ArrayList<CommandInterface> commandInterfaces = buildCommandList();
-//        for (CommandInterface commandInterface : commandInterfaces) {
-//            commandInterface.getNames().contains(userInput);
-//            commandInterface.execute();
-//        }
-
-
-        String text;
         Person person = new Person();
 
-        String name = null;
-        while (name == null) {
+        buildPlants(plants);
+        int health = 1;
 
-            name = readText();
-            if (name.equals("Admin")) {
+        buildCommandList(cart, plants, listNames, person, health);
+
+        String text;
+        String profileName = null;
+
+        while (profileName == null) {
+            profileName = readText();
+
+            if (profileName.equals("Admin")) {
                 System.out.println("Введите пароль");
                 String pass = readText();
+
                 if (pass.equals("12344")) {
-                    person.setName(name);
+                    person.setName(profileName);
+
                 } else {
                     System.out.println("Пароль не верен");
-                    name = null;
+                    profileName = null;
                 }
             }
         }
+        //todo здесь должен быть главный цикл программы
 
-        int health = 1;
         while (true) {
             if (health < 1) break;
-            while (person.getName().isEmpty()) {
-                System.out.println("Введите имя");
-
-            }
             text = readText();
 
 
@@ -78,84 +64,8 @@ public class Main {
                 System.out.println("price.full - цена всего выбраного товара на складе");
                 System.out.println("price.all - цена выбранного товара за килограм");
             }
-            /*if (text.equals("setName")) {//рудимент
-                System.out.println("Введите имя");
-                person.setName(readText());*/
-//        }
-            /*if (text.equals("name")) {//todo перенести рудимент в этот метод
-                System.out.println("Текущее имя = " + person.getName());
+            if (text.equals("name")) {
                 System.out.println("Для смены имени вы можете использовать команду setName");
-            }*/
-
-//            if (text.equals("cart.price")) {
-//                CartIn.execute(cart);
-//            }
-            if (text.equals("tip")) {
-                if (!listOfTip.isEmpty()) listOfTip.clear();
-                for (Plant plant1 : plants) {
-                    if (!plant1.isBayed()) {
-                        String t = plant1.getTip();
-                        if (!listOfTip.contains(t)) {
-                            listOfTip.add(t);
-                        }
-                    }
-                }
-                System.out.println("Выберите тип");
-                //создаёт список неповторающихся типов
-                for (String value : listOfTip) System.out.println(value);
-                String selectedTip = readText();//выбраное тип
-                //сравнение типа в списке с введённым типом
-                //сортировка именно этого типа
-                //добавление элемента в список имён
-                // при условии отсутствия данного имени в данном списке
-                if (!listNames.isEmpty()) listNames.clear();
-                for (Plant plant : plants) {
-                    if (plant.getTip().equals(selectedTip)) {
-                        String name = plant.getName();
-                        listNames.add(name);
-                    }
-                }
-                text = "cart.add";
-            }
-            if (text.equals("cart.add")) {
-                if (!listNames.isEmpty()) {
-                    System.out.println("Какой товар?");
-                    listNames.forEach(System.out::println);
-                    text = readText();//имя товара
-                    for (Plant plantInShop : plants) {
-                        if (plantInShop.getName().equals(text)) {//поиск товара по имени
-                            System.out.println("Есть " + plantInShop.getKilograms());//вывод количества присутствующего
-                            int howMuchNeedBuyer = 0;
-                            while (true) {
-                                System.out.println("Количество?(кг)");//проверка на количество товара
-                                howMuchNeedBuyer = Integer.parseInt(readText());
-                                if (howMuchNeedBuyer > plantInShop.getKilograms())
-                                    System.out.println("Такого количества нет");
-                                else break;
-
-                            }
-
-                            if (howMuchNeedBuyer > 0) {
-                                updateShopAndCart(cart, plantInShop, howMuchNeedBuyer);
-
-                            } else {
-                                System.out.println("Не задерживайте очередь если ничего не покупаете!");
-                                System.out.println("Вас выгнали из магазина =(");
-                                health = health - 1;
-                            }
-                            //проверка на остаток продукта
-                            if (plantInShop.getKilograms() == 0) {
-                                System.out.println("Товар " + plantInShop.getName() + " закончился в магазине");
-                                plantInShop.setBayed(true);
-
-                            }
-                        }
-                    }
-
-                } else {
-                    System.out.println("Вы не выбрали тип");
-                }
-
             }
 
 
@@ -166,26 +76,7 @@ public class Main {
             }
             if (text.equals("sort.natural")) reverser(text, listNames);
             if (text.equals("sort.reverse")) reverser(text, listNames);
-            if (text.equals("buy")) {
-                bayed.addAll(cart);
-                cart.clear();
-                text = "end";
-            }
-            if (text.equals("end")) {
-                System.out.println(person.getName());
-                System.out.println("Вы покинули магазин");
-                int sum = 0;
-                for (int i = 0; i < bayed.size(); i++) {
-                    System.out.println(bayed.get(i).getName() + " " + bayed.get(i).getKilograms() + "кг");
-                    System.out.println("Цена за килограмм = " + bayed.get(i).getPricePerKilogram());
-                    sum = sum + (bayed.get(i).getPricePerKilogram() * bayed.get(i).getKilograms());
-                }
-                System.out.println("Сумма затраченных средств = " + sum);
-                break;
-            }
-            if (text.equals("cart.back")) {
 
-            }
         }
 
     }
@@ -229,48 +120,27 @@ public class Main {
             return commandCollection;
         }
     */
-    private static ArrayList<CommandInterface> buildCommandList(ArrayList<Plant> cart, ArrayList<Plant> plants) {
+    private static ArrayList<CommandInterface> buildCommandList(ArrayList<Plant> cart, ArrayList<Plant> plants, ArrayList<String> listNames, Person person, int health) {
         //todo реализовать все методы
         ArrayList<CommandInterface> commandInterfaceCollection = new ArrayList<>();
         commandInterfaceCollection.add(new HelpCommands(commandInterfaceCollection));
-//        commandInterfaceCollection.add(new Name());
+        commandInterfaceCollection.add(new Name(cart, person));
         commandInterfaceCollection.add(new CartIn(cart));
+        commandInterfaceCollection.add(new CartAdd(cart, plants, listNames, health));
         commandInterfaceCollection.add(new CartBack(cart, plants));
+        commandInterfaceCollection.add(new Buy(cart, person));
 
 
         return commandInterfaceCollection;
     }
 
-    private static void updateShopAndCart(ArrayList<Plant> cart, Plant plantInShop, int howMuchNeedBuyer) {
-        int balance = plantInShop.getKilograms() - howMuchNeedBuyer;
-        Plant foundPlant = null;
-        int size = cart.size();
-        for (int i = 0; i < size; i++) {
-            Plant selectedPlantInCart = cart.get(i);
-            if (plantInShop.getName().equals(selectedPlantInCart.getName())) {//если соответствие
-                foundPlant = selectedPlantInCart;
-                break;
+    /*    public static void help(ArrayList<String> commandsList) {
+            System.out.println("Список доступных команд");
+            for (String s : commandsList) {
+                System.out.println(s);
             }
         }
-
-        if (foundPlant != null) {
-            foundPlant.setKilograms(foundPlant.getKilograms() + howMuchNeedBuyer);
-            plantInShop.setKilograms(balance);
-
-        } else {
-            Plant newPlant = new Plant(plantInShop);
-            newPlant.setKilograms(howMuchNeedBuyer);
-            cart.add(newPlant);
-        }
-    }
-
-    public static void help(ArrayList<String> commandsList) {
-        System.out.println("Список доступных команд");
-        for (String s : commandsList) {
-            System.out.println(s);
-        }
-    }
-
+    */
     public static void reverser(String a, ArrayList<String> list) {
         if (a.equals("sort.natural")) list.sort(Comparator.naturalOrder());
         if (a.equals("sort.reverse")) list.sort(Comparator.reverseOrder());

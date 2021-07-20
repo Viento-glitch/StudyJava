@@ -11,19 +11,21 @@ import java.util.List;
 import static StudyJavaRush.Shop.Methods.Reader.readText;
 
 
-public abstract class Name implements CommandInterface {
+public class Name implements CommandInterface {
     Person name;
+    ArrayList<Plant> cart;
 
     @Override
     public List<String> getNames() {
         return Arrays.asList("setName");
     }
 
-    public Name(Person person) {
+    public Name(ArrayList<Plant> cart, Person person) {
         this.name = person;
+        this.cart = cart;
     }
 
-    public void execute(ArrayList<Plant> cart) throws IOException {
+    public void execute() throws IOException {
         while (true) {
             System.out.println("Введите имя");
             name.setName(readText());

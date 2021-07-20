@@ -14,7 +14,7 @@ public class HelpCommands implements CommandInterface {
 
     @Override
     public List<String> getNames() {
-        return Arrays.asList("help","?");
+        return Arrays.asList("help", "?");
     }
 
     @Override
