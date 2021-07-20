@@ -34,13 +34,29 @@ public class Main {
 
         String text;
         Person person = new Person();
-        person.setName("");
+
+        String name = null;
+        while (name == null) {
+
+            name = readText();
+            if (name.equals("Admin")) {
+                System.out.println("Введите пароль");
+                String pass = readText();
+                if (pass.equals("12344")) {
+                    person.setName(name);
+                } else {
+                    System.out.println("Пароль не верен");
+                    name = null;
+                }
+            }
+        }
+
         int health = 1;
         while (true) {
             if (health < 1) break;
             while (person.getName().isEmpty()) {
                 System.out.println("Введите имя");
-//                Name
+
             }
             text = readText();
 
